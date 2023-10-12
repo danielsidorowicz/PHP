@@ -30,12 +30,12 @@
             $i++;
     };
     echo '<br>'; 
-    for($i=0; $i<3;$i++)
+    for($i=0; $i<2;$i++)
     {
         echo $wyrazy[$i];
         echo '<br>';    
     };
 
-    echo substr($tekst,0,5);
+    // echo substr($tekst,0,5);
     
 ?>

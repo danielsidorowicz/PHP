@@ -32,6 +32,6 @@ for($x=1;$x<31;$x++)
 
 };
 
-// echo $ile, ' liczb wystepuje wiecej niz raz';
+echo $ile, ' liczb wystepuje wiecej niz raz';
 
 ?>
