@@ -24,7 +24,7 @@ for($x=1;$x<31;$x++)
 {
 
     if(in_array($tab_repeat[$x], $tab_wypisane))
-        $i++;
+        $ile++;
     else
         echo '';
     $tab_wypisane[$x] = $tab_repeat[$x];
