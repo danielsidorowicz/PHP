@@ -1,0 +1,51 @@
+http://ws.cba.pl/4ic_sql/upload.php
+
+1. Utwórz zestawienie zawierające nazwy państw i liczby pierwszych miejsc w zawodach
+zdobytych przez zawodników z tych państw. Podaj nazwy państw, uwzględniając tylko te,
+z których pochodzi co najmniej jeden zdobywca pierwszego miejsca.
+
+SELECT panstwo, COUNT(panstwo) from puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika WHERE miejsce = 1  GROUP BY panstwo
+
+2. Którzy zawodnicy co najmniej w jednych zawodach uzyskali notę powyżej 450 punktów?
+Podaj ich nazwiska i imiona.
+
+SELECT nazwisko_i_imie from puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika WHERE nota > 450
+
+3. Ile razy Adam Małysz (wpisany w pliku jako MALYSZ Adam) zdobył pierwsze miejsce na skoczni w Zakopanem?
+
+SELECT nazwisko_i_imie, COUNT(nazwisko_i_imie) from ((puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika) INNER JOIN zawody ON zawody.id_zawodow=puchar.id_zawodow) WHERE nazwisko_i_imie="MALYSZ Adam" AND nazwa_skoczni="Zakopane" AND miejsce=1 GROUP BY nazwisko_i_imie
+
+4. Utwórz zestawienie podające dla każdego z analizowanych sezonów średnią długość skoków Adama Małysza z pierwszych serii i średnią długość skoków Adama Małysza z drugich serii. Uporządkuj zestawienie chronologicznie. Wyniki zaokrąglij do dwóch miejsc po przecinku.
+
+SELECT sezon, ROUND(AVG(wynik_I_serii), 2), ROUND(AVG(wynik_II_serii), 2) from ((puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika) INNER JOIN zawody ON zawody.id_zawodow=puchar.id_zawodow) WHERE nazwisko_i_imie="MALYSZ Adam" GROUP BY sezon
+
+5. Utwórz zestawienie, które podające ile razy zawodnicy z danego państwa wzięli udział w zawodach. Podaj nazwy państw uwzględniając tylko te, z których zawodnicy wzięli udział co najmniej 500 razy (jeden zawodnik może wziąć udział w kilku zawodach). Zestawienie posortuj malejąco wg ilości zawodników.
+
+SELECT panstwo, COUNT(nazwisko_i_imie) as ile from ((puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika) INNER JOIN zawody ON zawody.id_zawodow=puchar.id_zawodow) GROUP BY panstwo HAVING COUNT(nazwisko_i_imie) > 500
+
+6. Utwórz tabelę o nazwie skoki i skopiuj do tej tabeli następujące informacje o zawodach w których wzięła udział Polska – id, id zawodnika, id zawodow, nazwisko i imie, panstwo, nota, nazwa skoczni, sezon. (Jednym poleceniem)
+
+CREATE TABLE skoki AS SELECT id, zawodnicy.id_zawodnika, zawody.id_zawodow, nazwisko_i_imie, panstwo, nota, nazwa_skoczni, sezon from ((puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika) INNER JOIN zawody ON zawody.id_zawodow=puchar.id_zawodow) WHERE panstwo="Polska"
+
+7.  Do tabeli skoki dołącz informacje o zawodach w których wzięły udział Słowacja oraz Czechy – id, id zawodnika, id zawodow, nazwisko i imie, panstwo, nota, nazwa skoczni, sezon.
+
+INSERT INTO skoki(id, id_zawodnika, id_zawodow, nazwisko_i_imie, panstwo, nota, nazwa_skoczni, sezon) SELECT id, zawodnicy.id_zawodnika, zawody.id_zawodow, nazwisko_i_imie, panstwo, nota, nazwa_skoczni, sezon from ((puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika) INNER JOIN zawody ON zawody.id_zawodow=puchar.id_zawodow) WHERE  panstwo="Czechy" OR panstwo="Slowacja"
+
+
+
+8.  Podaj nazwiska i imiona 3 zawodników, którzy uzyskali najwyższe noty.
+
+SELECT nazwisko_i_imie, nota from puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika ORDER BY nota DESC LIMIT 3
+
+
+9.  Do tabeli skoki wstaw indeks unikatowy do kolumny id.
+
+ALTER TABLE skoki ADD UNIQUE(id)
+
+10.  Do tabeli skoki wstaw kolumnę uwagi o maksymalnej długości znaków 200.
+
+ALTER TABLE skoki ADD uwagi varchar(200)
+=========================================================================
+Dod) Utwórz zestawienie zawodników, którzy  w I i II serii skoków uzyskali średni wynik minimum 240 pkt. . Wynik zaokrąglij do dwóch miejsc po przecinku.
+
+SELECT nazwisko_i_imie, ROUND(AVG(wynik_I_serii+wynik_II_serii), 2) as srednia from ((puchar INNER JOIN zawodnicy ON puchar.id_zawodnika=zawodnicy.id_zawodnika) INNER JOIN zawody ON zawody.id_zawodow=puchar.id_zawodow) GROUP BY sezon HAVING srednia > 240
