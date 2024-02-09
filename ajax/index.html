@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .hide {
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+    </style>
+    <script>
+        function send() {
+            const al = document.getElementsByTagName("img")[0];
+            al.className = "show";
+            const xhttp = new XMLHttpRequest(); xhttp.open("POST", "ajax.php", true);
+
+            const name = document.getElementById("name").value
+            const output = document.getElementById("output");
+            xhttp.onreadystatechange = function () {
+                console.log(this.readyState);
+                if (this.readyState == 4 && this.status == 200) {
+                    const ob = JSON.parse(this.responseText);
+                    console.log(ob);
+                    al.className = "hide";
+                    output.innerHTML +=
+                        ob.name + " " + ob.country + "<br/>";
+                }
+            };
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("name=" + encodeURIComponent(name) + "&country=PL"); // rawurldecode 
+        }
+    </script>
+</head>
+
+<body>
+    <input id="name" placeholder="name" /> <button onclick="send()">Send</button>
+    <div id="output">
+    </div>
+    <img class="hide" src="https://apptimize.com/wp-content/uploads/2015/10/Ajax-loader.gif" alt="">
+</body>
+
+</html>
